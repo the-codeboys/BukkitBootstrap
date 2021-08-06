@@ -70,7 +70,7 @@ public class ConfigReader {
     }
 
     public static void saveConfig(Class<?> saveFrom) {
-        File file= new File(JavaPlugin.getProvidingPlugin(saveFrom).getDataFolder(),saveFrom.getName()+".yml");
+        File file= new File(JavaPlugin.getProvidingPlugin(saveFrom).getDataFolder(),saveFrom.getSimpleName()+".yml");
         saveConfig(saveFrom,file);
     }
 
