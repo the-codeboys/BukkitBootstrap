@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +24,10 @@ public class Gui implements InventoryHolder, Listener {
     protected final HashMap<Integer, Action> actions = new HashMap<>();
     private final Inventory inventory;
     private final Plugin plugin;
+
+    public Gui(int size, String title) {
+        this(JavaPlugin.getProvidingPlugin(Gui.class),size,title);
+    }
 
     public Gui(Plugin plugin, int size, String title) {
         this.inventory = Bukkit.createInventory(this, size, title);
