@@ -1,4 +1,3 @@
-
 package ml.codeboy.bukkitbootstrap.config;
 
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -13,8 +12,12 @@ import java.lang.reflect.Field;
 public class ConfigReader {
 
     public static void readConfig(Class<?> saveTo) {
-        File file= new File(JavaPlugin.getProvidingPlugin(saveTo).getDataFolder(),saveTo.getSimpleName()+".yml");
-        readConfig(saveTo,file);
+        readConfig(saveTo, ConfigUtil.getDefaultFileName(saveTo));
+    }
+
+    public static void readConfig(Class<?> saveTo, String fileName) {
+        File file = new File(JavaPlugin.getProvidingPlugin(saveTo).getDataFolder(), fileName);
+        readConfig(saveTo, file);
     }
 
     public static void readConfig(Class<?> saveTo, File file) {
@@ -39,19 +42,18 @@ public class ConfigReader {
 
         boolean changed = false;
 
+        ConfigScope scope= ConfigUtil.getScope(saveTo);
+
         for (Field field : saveTo.getDeclaredFields()) {
-            if (field.isAnnotationPresent(ConfigValue.class)) {
+            if (ConfigUtil.shouldBeSerialized(field,scope)) {
                 field.setAccessible(true);
 
-                String path = field.getAnnotation(ConfigValue.class).key();
-                if (path.equals(""))
-                    path = field.getName();
+                String path = ConfigUtil.getPath(field);
 
                 try {
                     if (config.contains(path)) {
-                        field.set(instance, getValue(config, path));
-                    }
-                    else {
+                        field.set(instance, ConfigUtil.getValue(config, path));
+                    } else {
                         config.set(path, field.get(instance));
                         changed = true;
                     }
@@ -61,6 +63,7 @@ public class ConfigReader {
             }
         }
         if (changed) {
+            ConfigUtil.addComments(config, saveTo);
             try {
                 config.save(file);
             } catch (IOException e) {
@@ -70,8 +73,12 @@ public class ConfigReader {
     }
 
     public static void saveConfig(Class<?> saveFrom) {
-        File file= new File(JavaPlugin.getProvidingPlugin(saveFrom).getDataFolder(),saveFrom.getSimpleName()+".yml");
-        saveConfig(saveFrom,file);
+        readConfig(saveFrom, ConfigUtil.getDefaultFileName(saveFrom));
+    }
+
+    public static void saveConfig(Class<?> saveFrom, String name) {
+        File file = new File(JavaPlugin.getProvidingPlugin(saveFrom).getDataFolder(), name);
+        saveConfig(saveFrom, file);
     }
 
     public static void saveConfig(Class<?> saveFrom, File file) {
@@ -94,13 +101,13 @@ public class ConfigReader {
             e.printStackTrace();
         }
 
+        ConfigScope scope= ConfigUtil.getScope(saveFrom);
+
         for (Field field : saveFrom.getDeclaredFields()) {
-            if (field.isAnnotationPresent(ConfigValue.class)) {
+            if (ConfigUtil.shouldBeSerialized(field,scope)) {
                 field.setAccessible(true);
 
-                String path = field.getAnnotation(ConfigValue.class).key();
-                if (path.equals(""))
-                    path = field.getName();
+                String path = ConfigUtil.getPath(field);
 
                 try {
                     config.set(path, field.get(instance));
@@ -109,6 +116,7 @@ public class ConfigReader {
                 }
             }
         }
+        ConfigUtil.addComments(config, saveFrom);
         try {
             config.save(file);
         } catch (IOException e) {
@@ -116,11 +124,4 @@ public class ConfigReader {
         }
     }
 
-    private static <T> T getValue(FileConfiguration config, String path) {
-        return (T) config.get(path);
-    }
-
-    private static <T> T getList(FileConfiguration config, String path) {
-        return (T) config.getList(path);
-    }
 }
