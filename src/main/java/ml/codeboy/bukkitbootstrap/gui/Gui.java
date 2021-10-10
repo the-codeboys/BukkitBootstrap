@@ -71,6 +71,14 @@ public class Gui implements InventoryHolder, Listener {
         addItem(item, getInventory().firstEmpty(), action);
     }
 
+    public void addItemLast(ItemStack item, Action action) {
+        int index = getInventory().getSize() - 1;
+        while (getInventory().getItem(index) != null) {
+            index--;
+        }
+        addItem(item, index, action);
+    }
+
     public void addItem(ItemStack item, int index, Action action) {
         inventory.setItem(index, item);
         actions.put(index, action);
