@@ -1,6 +1,5 @@
 package ml.codeboy.bukkitbootstrap.gui;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,15 +10,55 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 
-public class MultiPageGui extends Gui {// TODO: Finish MultiPageGui
+public class MultiPageGui extends Gui {
+
     private final int sizePerPage;
+    private final int size;
+    private int currentPage=0;
 
-    private final ArrayList<Inventory> pages = new ArrayList<>();
+    private final ArrayList<Gui> pages = new ArrayList<>();
 
-    public MultiPageGui(Plugin plugin, int sizePerPage, String title) {
+    public MultiPageGui(Plugin plugin, int size, String title) {
+        this(plugin, size, 54, title);
+    }
+
+    public MultiPageGui(Plugin plugin, int size, int sizePerPage, String title) {
         super(plugin, Math.min(sizePerPage, 54), title);
-        this.sizePerPage = sizePerPage;
-        createNextPage();
+        this.sizePerPage = Math.min(sizePerPage, 54);
+        this.size = size;
+        initialize();
+    }
+
+    private void initialize() {
+        int sizeTmp = this.size;
+        int index = 0;
+        while (sizeTmp > 0) {
+            Gui page = new Gui(this.sizePerPage, getPageName(pages.size()));
+            if (index != 0) {
+                page.addItem(getPreviousButton(),this.sizePerPage-9, player -> {
+                    player.closeInventory();
+                    this.currentPage--;
+                    this.open(player);
+                });
+                sizeTmp++;
+            }
+            if (sizeTmp > sizePerPage) {
+                page.addItem(getNextButton(),this.sizePerPage-1, player -> {
+                    player.closeInventory();
+                    this.currentPage++;
+                    this.open(player);
+                });
+            }
+            sizeTmp -= sizePerPage;
+            pages.add(page);
+            index++;
+        }
+
+        System.out.println("NumberOfPages"+pages.size());
+    }
+
+    private ItemStack getPreviousButton() {
+        return createItem(Material.ARROW, "[DEBUG] prev page");
     }
 
     protected ItemStack getLastButton() {
@@ -34,17 +73,15 @@ public class MultiPageGui extends Gui {// TODO: Finish MultiPageGui
         return "page " + id;
     }
 
-    protected void createNextPage() {
-        Inventory inventory = Bukkit.createInventory(this, sizePerPage, getPageName(pages.size()));
-
+    @Override
+    public void addItem(ItemStack item, Action action) {
+        for(Gui page:pages){
+            if(page.hasFreeSlot()){
+                page.addItem(item,action);
+                return;
+            }
+        }
     }
-
-    protected void addItem(ItemStack item, int page, int slot, Action action) {
-        Inventory inventory = pages.get(page);
-        inventory.setItem(slot, item);
-        actions.put(slot + page * sizePerPage, action);
-    }
-
 
     @EventHandler
     @Override
@@ -57,12 +94,17 @@ public class MultiPageGui extends Gui {// TODO: Finish MultiPageGui
     }
 
     private int getId(Inventory inventory) {
-        int id = -1;
         for (int i = 0; i < pages.size(); i++) {
-            if (inventory.equals(pages.get(i)))
+            if (inventory.equals(pages.get(i).getInventory()))
                 return i;
         }
-        return id;
+        return -1;
+    }
+
+    @Override
+    public Gui open(Player player){
+        player.openInventory(pages.get(currentPage).getInventory());
+        return this;
     }
 
 }
