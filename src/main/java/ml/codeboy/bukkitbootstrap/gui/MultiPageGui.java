@@ -57,7 +57,6 @@ public class MultiPageGui {
             pages.add(page);
             index++;
         }
-        System.out.println("NumberOfPages" + pages.size());
     }
 
     protected Gui createPage() {
