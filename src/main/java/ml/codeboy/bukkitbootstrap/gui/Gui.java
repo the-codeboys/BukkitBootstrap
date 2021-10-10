@@ -80,7 +80,12 @@ public class Gui implements InventoryHolder, Listener {
     }
 
     public boolean hasFreeSlot(){
-        return getInventory().firstEmpty()!=-1;
+        return getFreeSlot()!=-1;
+    }
+
+
+    public int getFreeSlot(){
+        return getInventory().firstEmpty();
     }
 
     public void addItem(ItemStack item, int index, Action action) {
