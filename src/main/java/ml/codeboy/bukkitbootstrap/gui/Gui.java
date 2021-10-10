@@ -79,6 +79,10 @@ public class Gui implements InventoryHolder, Listener {
         addItem(item, index, action);
     }
 
+    public boolean hasFreeSlot(){
+        return getInventory().firstEmpty()!=-1;
+    }
+
     public void addItem(ItemStack item, int index, Action action) {
         inventory.setItem(index, item);
         actions.put(index, action);
