@@ -118,6 +118,10 @@ public class MultiPageGui {
         }
     }
 
+    protected ArrayList<Gui> getPages() {
+        return pages;
+    }
+
     private int getId(Inventory inventory) {
         for (int i = 0; i < pages.size(); i++) {
             if (inventory.equals(pages.get(i).getInventory()))
