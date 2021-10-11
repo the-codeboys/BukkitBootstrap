@@ -15,18 +15,18 @@ public class ConfigUtil {
         return config.getSimpleName() + ".yml";
     }
 
-    static boolean shouldBeSerialized(Field field, ConfigScope scope){
-        int modifiers= field.getModifiers();
-        if(field.isAnnotationPresent(Ignore.class)||Modifier.isTransient(modifiers))
+    static boolean shouldBeSerialized(Field field, ConfigScope scope) {
+        int modifiers = field.getModifiers();
+        if (field.isAnnotationPresent(Ignore.class) || Modifier.isTransient(modifiers))
             return false;
-        return scope==ConfigScope.ALL||
-                field.isAnnotationPresent(ConfigValue.class)||
-                Modifier.isPrivate(modifiers)&&scope==ConfigScope.PRIVATE||
-                Modifier.isPublic(modifiers)&&scope==ConfigScope.PUBLIC;
+        return scope == ConfigScope.ALL ||
+                field.isAnnotationPresent(ConfigValue.class) ||
+                Modifier.isPrivate(modifiers) && scope == ConfigScope.PRIVATE ||
+                Modifier.isPublic(modifiers) && scope == ConfigScope.PUBLIC;
     }
 
-    static ConfigScope getScope(Class<?> clazz){
-        if(clazz.isAnnotationPresent(Config.class))
+    static ConfigScope getScope(Class<?> clazz) {
+        if (clazz.isAnnotationPresent(Config.class))
             return clazz.getAnnotation(Config.class).scope();
         return ConfigScope.NONE;
     }

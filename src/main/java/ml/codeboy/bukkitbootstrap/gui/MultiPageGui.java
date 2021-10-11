@@ -1,29 +1,20 @@
 package ml.codeboy.bukkitbootstrap.gui;
 
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class MultiPageGui {
 
     private final int sizePerPage;
-    private int size;
-
     private final Consumer<Gui> onPageCreation;
-
     private final ArrayList<Gui> pages = new ArrayList<>();
+    private int size;
 
     public MultiPageGui(Plugin plugin, int size, String title) {
         this(plugin, size, 54, title, null);
@@ -38,6 +29,14 @@ public class MultiPageGui {
         this.size = size;
         this.onPageCreation = onPageCreation;
         initialize();
+    }
+
+    public static ItemStack createItem(Material type, String name, boolean glow, String... lore) {
+        return Gui.createItem(type, name, glow, lore);
+    }
+
+    public static ItemStack createItem(Material type, String name, String... lore) {
+        return createItem(type, name, false, lore);
     }
 
     private void initialize() {
@@ -90,15 +89,11 @@ public class MultiPageGui {
     }
 
     private ItemStack getPreviousButton() {
-        return createItem(Material.ARROW, "[DEBUG] prev page");
-    }
-
-    protected ItemStack getLastButton() {
-        return createItem(Material.ARROW, "[DEBUG] last page");
+        return createItem(Material.ARROW, "prev page");
     }
 
     protected ItemStack getNextButton() {
-        return createItem(Material.ARROW, "[DEBUG] next page");
+        return createItem(Material.ARROW, "next page");
     }
 
     protected String getPageName(int id) {
@@ -115,7 +110,7 @@ public class MultiPageGui {
                     pages.add(newPage);
                     size += sizePerPage;
                     newPage.addItem(item, action);
-                }else {
+                } else {
                     page.addItem(item, action);
                 }
                 return;
@@ -138,13 +133,5 @@ public class MultiPageGui {
 
     public MultiPageGui open(Player player) {
         return this.open(player, 0);
-    }
-
-    public static ItemStack createItem(Material type, String name, boolean glow, String... lore) {
-        return Gui.createItem(type, name, glow, lore);
-    }
-
-    public static ItemStack createItem(Material type, String name, String... lore) {
-        return createItem(type, name, false, lore);
     }
 }

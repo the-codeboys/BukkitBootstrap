@@ -26,7 +26,7 @@ public class Gui implements InventoryHolder, Listener {
     private final Plugin plugin;
 
     public Gui(int size, String title) {
-        this(JavaPlugin.getProvidingPlugin(Gui.class),size,title);
+        this(JavaPlugin.getProvidingPlugin(Gui.class), size, title);
     }
 
     public Gui(Plugin plugin, int size, String title) {
@@ -54,7 +54,7 @@ public class Gui implements InventoryHolder, Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() != this||event.getInventory()==event.getView().getBottomInventory())
+        if (event.getInventory().getHolder() != this || event.getInventory() == event.getView().getBottomInventory())
             return;
         event.setCancelled(true);
         Action action = actions.getOrDefault(event.getRawSlot(), Action.none);
@@ -79,12 +79,12 @@ public class Gui implements InventoryHolder, Listener {
         addItem(item, index, action);
     }
 
-    public boolean hasFreeSlot(){
-        return getFreeSlot()!=-1;
+    public boolean hasFreeSlot() {
+        return getFreeSlot() != -1;
     }
 
 
-    public int getFreeSlot(){
+    public int getFreeSlot() {
         return getInventory().firstEmpty();
     }
 

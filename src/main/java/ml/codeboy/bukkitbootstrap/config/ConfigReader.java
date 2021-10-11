@@ -42,10 +42,10 @@ public class ConfigReader {
 
         boolean changed = false;
 
-        ConfigScope scope= ConfigUtil.getScope(saveTo);
+        ConfigScope scope = ConfigUtil.getScope(saveTo);
 
         for (Field field : saveTo.getDeclaredFields()) {
-            if (ConfigUtil.shouldBeSerialized(field,scope)) {
+            if (ConfigUtil.shouldBeSerialized(field, scope)) {
                 field.setAccessible(true);
 
                 String path = ConfigUtil.getPath(field);
@@ -101,10 +101,10 @@ public class ConfigReader {
             e.printStackTrace();
         }
 
-        ConfigScope scope= ConfigUtil.getScope(saveFrom);
+        ConfigScope scope = ConfigUtil.getScope(saveFrom);
 
         for (Field field : saveFrom.getDeclaredFields()) {
-            if (ConfigUtil.shouldBeSerialized(field,scope)) {
+            if (ConfigUtil.shouldBeSerialized(field, scope)) {
                 field.setAccessible(true);
 
                 String path = ConfigUtil.getPath(field);
