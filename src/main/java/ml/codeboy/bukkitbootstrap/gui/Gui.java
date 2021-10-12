@@ -93,6 +93,16 @@ public class Gui implements InventoryHolder, Listener {
         actions.put(index, action);
     }
 
+    /**
+     * @param slot the slot of the item to remove
+     * @return true if the slot was associated with an action. false if not.
+     * This deos not mean there wasn´t an item there it could just mean that the action was null
+     */
+    public boolean removeItem(int slot){
+        getInventory().setItem(slot,null);
+        return actions.remove(slot)!=null;
+    }
+
     public Gui open(Player player) {
         player.openInventory(getInventory());
         return this;
