@@ -7,8 +7,8 @@ import java.lang.reflect.Modifier;
 
 public class ConfigUtil {
     static String getDefaultFileName(Class<?> config) {
-        if (config.isAnnotationPresent(Config.class)) {
-            String name = config.getAnnotation(Config.class).name();
+        if (config.isAnnotationPresent(Configurable.class)) {
+            String name = config.getAnnotation(Configurable.class).name();
             if (name != null && name.length() > 0)
                 return name;
         }
@@ -26,8 +26,8 @@ public class ConfigUtil {
     }
 
     static ConfigScope getScope(Class<?> clazz) {
-        if (clazz.isAnnotationPresent(Config.class))
-            return clazz.getAnnotation(Config.class).scope();
+        if (clazz.isAnnotationPresent(Configurable.class))
+            return clazz.getAnnotation(Configurable.class).scope();
         return ConfigScope.NONE;
     }
 
@@ -39,8 +39,8 @@ public class ConfigUtil {
     }
 
     static void addComments(FileConfiguration config, Class<?> clazz) {
-        if (clazz.isAnnotationPresent(Config.class)) {
-            String comments = clazz.getAnnotation(Config.class).comments();
+        if (clazz.isAnnotationPresent(Configurable.class)) {
+            String comments = clazz.getAnnotation(Configurable.class).comments();
             config.options().header(comments);
         }
     }

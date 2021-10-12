@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Config {
+public @interface Configurable {
     /**
      * @return the name of the file this class should be serialized as by default
      */
