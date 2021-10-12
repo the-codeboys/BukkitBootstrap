@@ -32,7 +32,9 @@ public class ConfigUtil {
     }
 
     static String getPath(Field field) {
-        String path = field.getAnnotation(ConfigValue.class).key();
+        String path = null;
+        if (field.isAnnotationPresent(ConfigValue.class))
+            path = field.getAnnotation(ConfigValue.class).key();
         if (path == null || path.equals(""))
             path = field.getName();
         return path;
