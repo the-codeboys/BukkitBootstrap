@@ -44,6 +44,7 @@ public class ConfigUtil {
         if (clazz.isAnnotationPresent(Configurable.class)) {
             String comments = clazz.getAnnotation(Configurable.class).comments();
             config.options().header(comments);
+            config.options().copyHeader(true);
         }
     }
 
