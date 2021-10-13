@@ -6,7 +6,7 @@
 
     <groupId>ml.codeboy</groupId>
     <artifactId>BukkitBootstrap</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
     <packaging>jar</packaging>
 
     <name>BukkitBootstrap</name>
