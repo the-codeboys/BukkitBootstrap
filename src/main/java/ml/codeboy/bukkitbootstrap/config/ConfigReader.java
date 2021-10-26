@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 public class ConfigReader {
 
@@ -52,9 +53,15 @@ public class ConfigReader {
 
                 try {
                     if (config.contains(path)) {
-                        field.set(instance, ConfigUtil.getValue(config, path));
+                        if (HashMap.class.isAssignableFrom(field.getType()))
+                            field.set(instance, ConfigUtil.getHashMap(config, path));
+                        else
+                            field.set(instance, ConfigUtil.getValue(config, path));
                     } else {
-                        config.set(path, field.get(instance));
+                        if (HashMap.class.isAssignableFrom(field.getType()))
+                            ConfigUtil.saveHashMap(config,path,field.get(instance));
+                        else
+                            config.set(path, field.get(instance));
                         changed = true;
                     }
                 } catch (IllegalAccessException e) {
@@ -110,7 +117,10 @@ public class ConfigReader {
                 String path = ConfigUtil.getPath(field);
 
                 try {
-                    config.set(path, field.get(instance));
+                    if (HashMap.class.isAssignableFrom(field.getType()))
+                        ConfigUtil.saveHashMap(config,path,field.get(instance));
+                    else
+                        config.set(path, field.get(instance));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }

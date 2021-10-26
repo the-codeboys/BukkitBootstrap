@@ -4,7 +4,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ConfigUtil {
     static String getDefaultFileName(Class<?> config) {
@@ -51,6 +53,28 @@ public class ConfigUtil {
 
     static <T> T getValue(FileConfiguration config, String path) {
         return (T) config.get(path);
+    }
+
+    static <S,T> HashMap<S,T>getHashMap(FileConfiguration config, String path){
+        List<S> keys= (List<S>) config.getList(path+".keys",new ArrayList<S>());
+        List<T> values= (List<T>) config.getList(path+".values",new ArrayList<T>());
+        if(keys.size()!=values.size())
+            throw new IllegalStateException("Tried to load HashMap with different sizes for keys and values");
+        HashMap<S,T>map=new HashMap<>();
+        for (int i = 0; i < keys.size(); i++) {
+            map.put(keys.get(i),values.get(i));
+        }
+        return map;
+    }
+
+    static <S,T> void saveHashMap(FileConfiguration config, String path, Object hashMap){
+        if(!(hashMap instanceof  HashMap))
+            throw new IllegalArgumentException();
+        HashMap<S,T>map= (HashMap<S, T>) hashMap;
+        List<S> keys= new ArrayList<>(map.keySet());
+        List<T> values= new ArrayList<>(map.values());
+        config.set(path+".keys",keys);
+        config.set(path+".values",values);
     }
 
 }
