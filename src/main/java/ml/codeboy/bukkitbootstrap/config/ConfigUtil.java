@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 
 public class ConfigUtil {
     static String getDefaultFileName(Class<?> config) {
@@ -52,7 +53,4 @@ public class ConfigUtil {
         return (T) config.get(path);
     }
 
-    private static <T> T getList(FileConfiguration config, String path) {
-        return (T) config.getList(path);
-    }
 }
