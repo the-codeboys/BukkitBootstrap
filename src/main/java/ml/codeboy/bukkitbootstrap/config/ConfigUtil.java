@@ -7,6 +7,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class ConfigUtil {
     static String getDefaultFileName(Class<?> config) {
@@ -65,6 +66,14 @@ public class ConfigUtil {
             map.put(keys.get(i),values.get(i));
         }
         return map;
+    }
+
+    static UUID getUUID(FileConfiguration config, String path){
+        return UUID.fromString(config.getString(path));
+    }
+
+    static void saveUUID(FileConfiguration config, String path, Object uuid){
+        config.set(path,uuid.toString());
     }
 
     static <S,T> void saveHashMap(FileConfiguration config, String path, Object hashMap){

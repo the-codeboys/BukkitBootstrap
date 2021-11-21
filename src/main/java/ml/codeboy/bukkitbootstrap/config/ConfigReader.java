@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class ConfigReader {
 
@@ -55,11 +56,15 @@ public class ConfigReader {
                     if (config.contains(path)) {
                         if (HashMap.class.isAssignableFrom(field.getType()))
                             field.set(instance, ConfigUtil.getHashMap(config, path));
+                        else if (UUID.class.isAssignableFrom(field.getType()))
+                            field.set(instance, ConfigUtil.getUUID(config, path));
                         else
                             field.set(instance, ConfigUtil.getValue(config, path));
                     } else {
                         if (HashMap.class.isAssignableFrom(field.getType()))
-                            ConfigUtil.saveHashMap(config,path,field.get(instance));
+                            ConfigUtil.saveHashMap(config, path, field.get(instance));
+                        else if (UUID.class.isAssignableFrom(field.getType()))
+                            ConfigUtil.saveUUID(config, path, field.get(instance));
                         else
                             config.set(path, field.get(instance));
                         changed = true;
@@ -118,7 +123,7 @@ public class ConfigReader {
 
                 try {
                     if (HashMap.class.isAssignableFrom(field.getType()))
-                        ConfigUtil.saveHashMap(config,path,field.get(instance));
+                        ConfigUtil.saveHashMap(config, path, field.get(instance));
                     else
                         config.set(path, field.get(instance));
                 } catch (IllegalAccessException e) {
