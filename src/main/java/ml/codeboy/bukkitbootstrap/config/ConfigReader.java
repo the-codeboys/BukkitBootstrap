@@ -33,7 +33,7 @@ public class ConfigReader {
     }
 
     public static void saveConfig(Class<?> saveFrom) {
-        readConfig(saveFrom, ConfigUtil.getDefaultFileName(saveFrom));
+        saveConfig(saveFrom, ConfigUtil.getDefaultFileName(saveFrom));
     }
 
     public static void saveConfig(Class<?> saveFrom, String name) {
