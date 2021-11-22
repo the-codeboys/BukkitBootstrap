@@ -1,13 +1,13 @@
 package ml.codeboy.bukkitbootstrap.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfigurationOptions;
+import org.yaml.snakeyaml.Yaml;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ConfigUtil {
     static String getDefaultFileName(Class<?> config) {
@@ -52,9 +52,36 @@ public class ConfigUtil {
         }
     }
 
-    static <T> T getValue(FileConfiguration config, String path) {
-        return (T) config.get(path);
+    static <T> T getValue(FileConfiguration config, String path, Class<T>clazz) {
+        return getValue(config, path, clazz,0);
     }
+
+    static <T> T getValue(FileConfiguration config, String path, Class<T>clazz,int depth) {
+        T t = (T) config.get(path);
+        if(t==null)
+            t=deserialiseValue(config, path,clazz);
+        return t;
+    }
+
+    static <T> T deserialiseValue(FileConfiguration config, String path, Class<T>clazz) {
+        return deserialiseValue(config, path, clazz,0);
+    }
+
+    static <T> T deserialiseValue(FileConfiguration config, String path, Class<T>clazz,int depth) {
+        if(depth>5)//make sure we don´t get stuck
+            return null;
+        try {
+            T t = clazz.newInstance();
+            for (Field field: getConfigurableFields(clazz)){
+                field.set(t,getValue(config,path+"."+field.getName(),clazz,depth+1));
+            }
+            return t;
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     static <S,T> HashMap<S,T>getHashMap(FileConfiguration config, String path){
         List<S> keys= (List<S>) config.getList(path+".keys",new ArrayList<S>());
@@ -68,14 +95,6 @@ public class ConfigUtil {
         return map;
     }
 
-    static UUID getUUID(FileConfiguration config, String path){
-        return UUID.fromString(config.getString(path));
-    }
-
-    static void saveUUID(FileConfiguration config, String path, Object uuid){
-        config.set(path,uuid.toString());
-    }
-
     static <S,T> void saveHashMap(FileConfiguration config, String path, Object hashMap){
         if(!(hashMap instanceof  HashMap))
             throw new IllegalArgumentException();
@@ -84,6 +103,12 @@ public class ConfigUtil {
         List<T> values= new ArrayList<>(map.values());
         config.set(path+".keys",keys);
         config.set(path+".values",values);
+    }
+
+    static Collection<Field>getConfigurableFields(Class<?> clazz){
+        return Arrays.stream(clazz.getDeclaredFields())
+                .filter(field->shouldBeSerialized(field,getScope(clazz)))
+                .collect(Collectors.toList());
     }
 
 }

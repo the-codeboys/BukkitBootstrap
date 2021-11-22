@@ -1,5 +1,6 @@
 package ml.codeboy.bukkitbootstrap.config;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,7 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.UUID;
+
+import static ml.codeboy.bukkitbootstrap.config.ConfigUtil.getConfigurableFields;
 
 public class ConfigReader {
 
@@ -27,61 +29,7 @@ public class ConfigReader {
     }
 
     public static void readConfig(Class<?> saveTo, Object instance, File file) {
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        FileConfiguration config = new YamlConfiguration();
-        try {
-            config.load(file);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        boolean changed = false;
-
-        ConfigScope scope = ConfigUtil.getScope(saveTo);
-
-        for (Field field : saveTo.getDeclaredFields()) {
-            if (ConfigUtil.shouldBeSerialized(field, scope)) {
-                field.setAccessible(true);
-
-                String path = ConfigUtil.getPath(field);
-
-                try {
-                    if (config.contains(path)) {
-                        if (HashMap.class.isAssignableFrom(field.getType()))
-                            field.set(instance, ConfigUtil.getHashMap(config, path));
-                        else if (UUID.class.isAssignableFrom(field.getType()))
-                            field.set(instance, ConfigUtil.getUUID(config, path));
-                        else
-                            field.set(instance, ConfigUtil.getValue(config, path));
-                    } else {
-                        if (HashMap.class.isAssignableFrom(field.getType()))
-                            ConfigUtil.saveHashMap(config, path, field.get(instance));
-                        else if (UUID.class.isAssignableFrom(field.getType()))
-                            ConfigUtil.saveUUID(config, path, field.get(instance));
-                        else
-                            config.set(path, field.get(instance));
-                        changed = true;
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        if (changed) {
-            ConfigUtil.addComments(config, saveTo);
-            try {
-                config.save(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        saveOrLoadConfig(saveTo, instance, file, false);
     }
 
     public static void saveConfig(Class<?> saveFrom) {
@@ -98,6 +46,11 @@ public class ConfigReader {
     }
 
     public static void saveConfig(Class<?> saveFrom, Object instance, File file) {
+        saveOrLoadConfig(saveFrom, instance, file, true);
+    }
+
+
+    public static void saveOrLoadConfig(Class<?> clazz, Object instance, File file, boolean save) {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             try {
@@ -113,29 +66,64 @@ public class ConfigReader {
             e.printStackTrace();
         }
 
-        ConfigScope scope = ConfigUtil.getScope(saveFrom);
+        boolean modified = false;
 
-        for (Field field : saveFrom.getDeclaredFields()) {
-            if (ConfigUtil.shouldBeSerialized(field, scope)) {
-                field.setAccessible(true);
+        for (Field field : getConfigurableFields(clazz)) {
+            field.setAccessible(true);
 
-                String path = ConfigUtil.getPath(field);
+            String path = ConfigUtil.getPath(field);
 
-                try {
+            try {
+                if (save || !config.contains(path)) {
                     if (HashMap.class.isAssignableFrom(field.getType()))
                         ConfigUtil.saveHashMap(config, path, field.get(instance));
                     else
                         config.set(path, field.get(instance));
+                    modified = true;
+                } else {
+                    if (HashMap.class.isAssignableFrom(field.getType()))
+                        field.set(instance, ConfigUtil.getHashMap(config, path));
+                    else
+                        field.set(instance, ConfigUtil.getValue(config, path,field.getType()));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        if (save || modified) {
+            ConfigUtil.addComments(config, clazz);
+            try {
+                config.save(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Translates color codes in all the configurable Fields in a class.
+     * This method is meant to be used only for classes which don´t get saved with {@link ConfigReader#saveConfig(Class)}
+     *
+     * @param clazz     The class
+     * @param instance  The instance of the class. Use null to only affect static fields
+     * @param colorChar The color char to use e.g. '&'
+     */
+    public static void translateColorCodes(Class<?> clazz, Object instance, char colorChar) {
+        for (Field field : getConfigurableFields(clazz)) {
+            if (field.getType().equals(String.class)) {
+                field.setAccessible(true);
+                try {
+                    Object value = field.get(instance);
+                    if (value instanceof String) {
+                        String string = (String) value;
+                        string = ChatColor.translateAlternateColorCodes(colorChar, string);
+                        value = string;
+                        field.set(instance, value);
+                    }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
             }
-        }
-        ConfigUtil.addComments(config, saveFrom);
-        try {
-            config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
