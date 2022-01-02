@@ -88,7 +88,7 @@ public class MultiPageGui {
         return this.sizePerPage - 9;
     }
 
-    private ItemStack getPreviousButton() {
+    protected ItemStack getPreviousButton() {
         return createItem(Material.ARROW, "prev page");
     }
 
