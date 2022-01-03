@@ -1,5 +1,10 @@
 package ml.codeboy.bukkitbootstrap.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
+
 public class Util {
     public static String replaceAllCodes(String toTranslate){
         return translateHexColorCodes("\\{","\\}", ChatColor.translateAlternateColorCodes('&',toTranslate));
