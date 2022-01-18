@@ -16,7 +16,6 @@ public class SavedInventory {
         PlayerInventory inv = p.getInventory();
         contents = inv.getContents();
         armorContents = inv.getArmorContents();
-        inv.clear();
     }
 
     public static void save(Player player){
