@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.bukkit.ChatColor.COLOR_CHAR;
+import org.bukkit.ChatColor;
 
 public class Util {
     public static String replaceAllCodes(String toTranslate){
