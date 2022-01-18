@@ -3,7 +3,6 @@ package ml.codeboy.bukkitbootstrap.util;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
 
@@ -36,10 +35,7 @@ public class SavedInventory {
     }
 
     public void restore() {
-        Inventory open=p.getOpenInventory();
-        if(open==p.getInventory()) {
-            open.setCursor(null);
-        }
+        p.getOpenInventory().setCursor(null);
         p.getInventory().clear();
         p.getInventory().setContents(contents);
         p.getInventory().setArmorContents(armorContents);
