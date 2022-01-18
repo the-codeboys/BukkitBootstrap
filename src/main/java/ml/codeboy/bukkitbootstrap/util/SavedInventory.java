@@ -35,7 +35,10 @@ public class SavedInventory {
     }
 
     public void restore() {
-        p.getOpenInventory().setCursor(null);
+        Inventory open=p.getOpenInventory();
+        if(open==p.getInventory()) {
+            open.setCursor(null);
+        }
         p.getInventory().clear();
         p.getInventory().setContents(contents);
         p.getInventory().setArmorContents(armorContents);
