@@ -12,7 +12,6 @@ public class SavedInventory {
     private final Player p;
 
     public SavedInventory(Player p) {
-        inventories.put(p, this);
         this.p = p;
         PlayerInventory inv = p.getInventory();
         contents = inv.getContents();
@@ -21,20 +20,24 @@ public class SavedInventory {
     }
 
     public static void save(Player player){
-        new SavedInventory(player);
+        inventories.put(player, new SavedInventory(player));
     }
 
     public static void restore(Player player){
         get(player).restore();
+        remove(player);
     }
 
     public static SavedInventory get(Player p) {
         return inventories.get(p);
     }
 
+    public static boolean remove(Player p) {
+        return inventories.remove(p);
+    }
+
     public void restore() {
         p.getOpenInventory().setCursor(null);
-        p.closeInventory();
         p.getInventory().clear();
         p.getInventory().setContents(contents);
         p.getInventory().setArmorContents(armorContents);
