@@ -24,15 +24,14 @@ public class SavedInventory {
     }
 
     public static void restore(Player player){
-        get(player).restore();
-        remove(player);
+        remove(player).restore();
     }
 
     public static SavedInventory get(Player p) {
         return inventories.get(p);
     }
 
-    public static boolean remove(Player p) {
+    public static SavedInventory remove(Player p) {
         return inventories.remove(p);
     }
 
