@@ -3,6 +3,7 @@ package ml.codeboy.bukkitbootstrap.util;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
 
