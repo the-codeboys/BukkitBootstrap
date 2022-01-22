@@ -57,8 +57,12 @@ public class Gui implements InventoryHolder, Listener {
         if (event.getInventory().getHolder() != this || event.getInventory() == event.getView().getBottomInventory())
             return;
         event.setCancelled(true);
+
+        boolean leftClick=event.isLeftClick();
+        boolean shiftClick=event.isShiftClick();
+
         Action action = actions.getOrDefault(event.getRawSlot(), Action.none);
-        action.execute((Player) event.getWhoClicked());
+        action.click((Player) event.getWhoClicked(),leftClick,shiftClick);
     }
 
     @EventHandler
