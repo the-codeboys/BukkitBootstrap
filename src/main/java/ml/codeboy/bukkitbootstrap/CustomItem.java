@@ -46,6 +46,29 @@ public class CustomItem {
         return createItem(name, material, durability, "");
     }
 
+    public static CustomItem createItemOrGet(String name, Material material, short durability, Consumer<ItemStack> onCreation, String... lore) {
+        if (customItems.containsKey(name)) {
+            return customItems.get(name);
+        }
+        for (CustomItem customItem : customItems.values()) {
+            if (customItem.material == material && customItem.durability == durability) {
+                return customItem;
+            }
+        }
+        CustomItem item = new CustomItem(name, material, durability, onCreation, lore);
+        customItems.put(name, item);
+        return item;
+    }
+
+    public static CustomItem createItemOrGet(String name, Material material, short durability, String... lore) {
+        return createItemOrGet(name, material, durability, null, lore);
+    }
+
+    public static CustomItem createItemOrGet(String name, Material material, short durability) {
+        return createItemOrGet(name, material, durability, "");
+    }
+
+
     private String name;
     private String[] lore;
     private Material material;
