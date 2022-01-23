@@ -130,7 +130,20 @@ public class MultiPageGui {
         return -1;
     }
 
+    public int getOpenPage(Player player){
+        ArrayList<Gui> guis = getPages();
+        for (int i = 0; i < guis.size(); i++) {
+            Gui gui = guis.get(i);
+            if (gui.getInventory().getViewers().contains(player)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public MultiPageGui open(Player player, int index) {
+        if(index<0||index>=getPages().size())
+            throw new IllegalArgumentException("This page does not exist");
         player.openInventory(pages.get(index).getInventory());
         return this;
     }
