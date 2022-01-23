@@ -142,6 +142,8 @@ public class MultiPageGui {
     }
 
     public MultiPageGui open(Player player, int index) {
+        if(index<0||index>=getPages().size())
+            throw new IllegalArgumentException("This page does not exist");
         player.openInventory(pages.get(index).getInventory());
         return this;
     }
