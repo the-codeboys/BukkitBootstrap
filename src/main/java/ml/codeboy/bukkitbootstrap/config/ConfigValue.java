@@ -5,6 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Indicates that this field should be serialized by {@link ConfigReader}.
+ * Transient fields or fields with {@link Ignore} will never be serialized
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigValue {

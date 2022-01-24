@@ -9,7 +9,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ConfigUtil {
+class ConfigUtil {
     static String getDefaultFileName(Class<?> config) {
         if (config.isAnnotationPresent(Configurable.class)) {
             String name = config.getAnnotation(Configurable.class).name();
