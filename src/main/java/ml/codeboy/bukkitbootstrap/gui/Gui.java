@@ -71,6 +71,10 @@ public class Gui implements InventoryHolder, Listener {
             event.setCancelled(true);
     }
 
+    public void addItem(ItemStack item, AdvancedAction action) {
+        addItem(item, (Action) action);
+    }
+
     public void addItem(ItemStack item, Action action) {
         addItem(item, getInventory().firstEmpty(), action);
     }

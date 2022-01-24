@@ -100,6 +100,10 @@ public class MultiPageGui {
         return "page " + id;
     }
 
+    public void addItem(ItemStack item, AdvancedAction action) {
+        addItem(item, (Action) action);
+    }
+
     public void addItem(ItemStack item, Action action) {
         for (Gui page : pages) {
             if (page.hasFreeSlot()) {
