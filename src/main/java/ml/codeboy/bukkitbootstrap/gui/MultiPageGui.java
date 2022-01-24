@@ -16,19 +16,41 @@ public class MultiPageGui {
     private final ArrayList<Gui> pages = new ArrayList<>();
     private int size;
 
-    public MultiPageGui(Plugin plugin, int size, String title) {
-        this(plugin, size, 54, title, null);
+    public MultiPageGui() {
+        this(54);
     }
 
-    public MultiPageGui(Plugin plugin, int sizePerPage, String title, Consumer<Gui> onPageCreation) {
-        this(plugin, Math.min(sizePerPage, 54), Math.min(sizePerPage, 54), title, onPageCreation);
+    public MultiPageGui(int sizePerPage) {
+        this(sizePerPage, null);
     }
 
-    public MultiPageGui(Plugin plugin, int size, int sizePerPage, String title, Consumer<Gui> onPageCreation) {
+    public MultiPageGui(int sizePerPage, Consumer<Gui> onPageCreation) {
         this.sizePerPage = Math.min(sizePerPage, 54);
-        this.size = size;
         this.onPageCreation = onPageCreation;
         initialize();
+    }
+
+    /**
+     * @deprecated use {@link MultiPageGui#MultiPageGui()}
+     */
+    @Deprecated
+    public MultiPageGui(Plugin plugin, int size, String title) {
+        this();
+    }
+
+    /**
+     * @deprecated use {@link MultiPageGui#MultiPageGui(int, Consumer)}
+     */
+    @Deprecated
+    public MultiPageGui(Plugin plugin, int sizePerPage, String title, Consumer<Gui> onPageCreation) {
+        this(sizePerPage, onPageCreation);
+    }
+
+    /**
+     * @deprecated use {@link MultiPageGui#MultiPageGui(int, Consumer)}
+     */
+    public MultiPageGui(Plugin plugin, int size, int sizePerPage, String title, Consumer<Gui> onPageCreation) {
+        this(sizePerPage, onPageCreation);
     }
 
     public static ItemStack createItem(Material type, String name, boolean glow, String... lore) {
@@ -98,6 +120,10 @@ public class MultiPageGui {
 
     protected String getPageName(int id) {
         return "page " + id;
+    }
+
+    public void addItem(ItemStack item, AdvancedAction action) {
+        addItem(item, (Action) action);
     }
 
     public void addItem(ItemStack item, Action action) {
