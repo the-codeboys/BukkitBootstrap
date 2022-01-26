@@ -16,4 +16,9 @@ public @interface ConfigValue {
      * @return the key to use when saving. If this is empty the name of the field will be used
      */
     String key() default "";
+
+    /**
+     * @return The aliases for this field. Useful when the name of a field changed but old configs should still work
+     */
+    String[] aliases() default {};
 }
