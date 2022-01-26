@@ -1,8 +1,6 @@
 package ml.codeboy.bukkitbootstrap.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfigurationOptions;
-import org.yaml.snakeyaml.Yaml;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -44,6 +42,15 @@ class ConfigUtil {
         return path;
     }
 
+    static String[] getAlternativePaths(Field field) {
+        String[] paths = null;
+        if (field.isAnnotationPresent(ConfigValue.class))
+            paths = field.getAnnotation(ConfigValue.class).aliases();
+        if (paths == null)
+            paths = new String[0];
+        return paths;
+    }
+
     static void addComments(FileConfiguration config, Class<?> clazz) {
         if (clazz.isAnnotationPresent(Configurable.class)) {
             String comments = clazz.getAnnotation(Configurable.class).comments();
@@ -59,15 +66,15 @@ class ConfigUtil {
     static <T> T getValue(FileConfiguration config, String path, Class<T> clazz, int depth) {
         T t = (T) config.get(path);
         if (t == null)
-            t = deserialiseValue(config, path, clazz);
+            t = deserializeValue(config, path, clazz, depth);
         return t;
     }
 
-    static <T> T deserialiseValue(FileConfiguration config, String path, Class<T> clazz) {
-        return deserialiseValue(config, path, clazz, 0);
+    static <T> T deserializeValue(FileConfiguration config, String path, Class<T> clazz) {
+        return deserializeValue(config, path, clazz, 0);
     }
 
-    static <T> T deserialiseValue(FileConfiguration config, String path, Class<T> clazz, int depth) {
+    static <T> T deserializeValue(FileConfiguration config, String path, Class<T> clazz, int depth) {
         if (depth > 5)//make sure we don´t get stuck
             return null;
         try {
@@ -103,6 +110,20 @@ class ConfigUtil {
         List<T> values = new ArrayList<>(map.values());
         config.set(path + ".keys", keys);
         config.set(path + ".values", values);
+    }
+
+    static void saveValue(FileConfiguration config, String path, Field field, Object instance) throws IllegalAccessException {
+        if (HashMap.class.isAssignableFrom(field.getType()))
+            saveHashMap(config, path, field.get(instance));
+        else
+            config.set(path, field.get(instance));
+    }
+
+    static void readValue(FileConfiguration config, String path, Field field, Object instance) throws IllegalAccessException {
+        if (HashMap.class.isAssignableFrom(field.getType()))
+            field.set(instance, getHashMap(config, path));
+        else
+            field.set(instance, getValue(config, path, field.getType()));
     }
 
     static Collection<Field> getConfigurableFields(Class<?> clazz) {
