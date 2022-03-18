@@ -63,6 +63,8 @@ public class MultiPageGui {
 
     private void initialize() {
         int sizeTmp = this.size;
+        if (sizeTmp == 0)//I'm not sure if the value is ever not 0 but if it is the Gui does not work
+            sizeTmp = 1;
         int index = 0;
         while (sizeTmp > 0) {
             Gui page = createPage();
@@ -156,11 +158,11 @@ public class MultiPageGui {
         return -1;
     }
 
-    public int getOpenPage(Player player){
+    public int getOpenPage(Player player) {
         ArrayList<Gui> guis = getPages();
         for (int i = 0; i < guis.size(); i++) {
             Gui gui = guis.get(i);
-            if (gui.getInventory().getViewers().contains(player)){
+            if (gui.getInventory().getViewers().contains(player)) {
                 return i;
             }
         }
@@ -168,7 +170,7 @@ public class MultiPageGui {
     }
 
     public MultiPageGui open(Player player, int index) {
-        if(index<0||index>=getPages().size())
+        if (index < 0 || index >= getPages().size())
             throw new IllegalArgumentException("This page does not exist");
         player.openInventory(pages.get(index).getInventory());
         return this;
